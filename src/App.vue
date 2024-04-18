@@ -1,8 +1,17 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-function logout() {
-  // localStorage.removeItem('user')
-  // router.push('/')
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { useUserAuthStore } from '@/stores/user-auth'
+
+const router = useRouter()
+const store = useUserAuthStore()
+
+async function logout() {
+  await store.setLogout()
+  if (store.error) {
+    return
+  } else {
+    router.push('/')
+  }
 }
 </script>
 
@@ -11,9 +20,9 @@ function logout() {
     <h1 class="text-2xl font-bold">786 Todo App</h1>
     <ul class="flex gap-4 justify-between">
       <li>
-        <RouterLink active-class="font-bold transition-all" to="/"
-          >Home</RouterLink
-        >
+        <RouterLink active-class="font-bold transition-all" to="/">
+          Home
+        </RouterLink>
       </li>
       <li>
         <RouterLink active-class="font-bold transition-all" to="/todos/create">

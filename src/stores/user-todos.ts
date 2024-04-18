@@ -4,8 +4,13 @@ import { defineStore } from 'pinia'
 export const useUserTodosStore = defineStore('user todos', {
   state: () => ({
     todos: [] as Todo[],
+    error: null as string | null,
+    success: null as string | null,
   }),
   actions: {
+    setTodos(todos: Todo[]) {
+      this.todos = todos
+    },
     setAddTodo(todo: Todo) {
       this.todos.push(todo)
     },
