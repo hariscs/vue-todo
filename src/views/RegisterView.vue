@@ -2,9 +2,12 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { useUserAuthStore } from '@/stores/user-auth'
+const store = useUserAuthStore()
+
 const email = ref('')
 const password = ref('')
-const passwordConfirmation = ref('')
+const password_confirmation = ref('')
 const router = useRouter()
 const RegisterErrors = reactive({
   email: '',
@@ -12,14 +15,14 @@ const RegisterErrors = reactive({
   passwordConfirmation: '',
 })
 
-const submit = () => {
+const submit = async () => {
   RegisterErrors.email = email.value ? '' : 'Email is required'
   RegisterErrors.password = password.value ? '' : 'Password is required'
-  RegisterErrors.passwordConfirmation = passwordConfirmation.value
+  RegisterErrors.passwordConfirmation = password_confirmation.value
     ? ''
     : 'Password confirmation is required'
 
-  if (password.value !== passwordConfirmation.value) {
+  if (password.value !== password_confirmation.value) {
     RegisterErrors.passwordConfirmation = 'Password does not match'
     return
   }
@@ -27,13 +30,18 @@ const submit = () => {
     return
   }
 
-  try {
-    console.log({ email: email.value, password: password.value })
-    RegisterErrors.email = ''
-    RegisterErrors.password = ''
+  const user = {
+    email: email.value,
+    password: password.value,
+    password_confirmation: password_confirmation.value,
+  }
+  await store.setRegister(user)
+  RegisterErrors.email = ''
+  RegisterErrors.password = ''
+  if (store.error) {
+    return
+  } else {
     router.push('/login')
-  } catch (error) {
-    console.log(error)
   }
 }
 </script>
@@ -89,7 +97,7 @@ const submit = () => {
               id="passwordConfirmation"
               name="passwordConfirmation"
               type="password"
-              v-model="passwordConfirmation"
+              v-model="password_confirmation"
               class="w-full px-3 py-2 border text-sm border-gray-300 text-gray-900 rounded"
               placeholder="Password Confirmation"
             />

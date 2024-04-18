@@ -1,30 +1,34 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserAuthStore } from '@/stores/user-auth'
+const store = useUserAuthStore()
 
 const email = ref('')
 const password = ref('')
 const router = useRouter()
-const loginErrors = reactive({
+const validationErrors = reactive({
   email: '',
   password: '',
 })
 
-const submit = () => {
-  loginErrors.email = email.value ? '' : 'Email is required'
-  loginErrors.password = password.value ? '' : 'Password is required'
+const submit = async () => {
+  validationErrors.email = email.value ? '' : 'Email is required'
+  validationErrors.password = password.value ? '' : 'Password is required'
 
-  if (loginErrors.email || loginErrors.password) {
+  if (validationErrors.email || validationErrors.password) {
     return
   }
 
-  try {
-    console.log({ email: email.value, password: password.value })
-    loginErrors.email = ''
-    loginErrors.password = ''
+  const user = { email: email.value, password: password.value }
+  await store.setLogin(user)
+  validationErrors.email = ''
+  validationErrors.password = ''
+
+  if (store.error) {
+    return
+  } else {
     router.push('/todos')
-  } catch (error) {
-    console.log(error)
   }
 }
 </script>
@@ -51,8 +55,11 @@ const submit = () => {
               class="w-full px-3 py-2 border text-sm border-gray-300 text-gray-900 rounded"
               placeholder="Email address"
             />
-            <div v-if="loginErrors.email" class="text-xs mt-0 text-red-600">
-              {{ loginErrors.email }}
+            <div
+              v-if="validationErrors.email"
+              class="text-xs mt-0 text-red-600"
+            >
+              {{ validationErrors.email }}
             </div>
           </div>
           <div>
@@ -65,8 +72,11 @@ const submit = () => {
               class="w-full px-3 py-2 border text-sm border-gray-300 text-gray-900 rounded"
               placeholder="Password"
             />
-            <div v-if="loginErrors.password" class="text-xs mt-0 text-red-600">
-              {{ loginErrors.password }}
+            <div
+              v-if="validationErrors.password"
+              class="text-xs mt-0 text-red-600"
+            >
+              {{ validationErrors.password }}
             </div>
           </div>
         </div>
@@ -78,6 +88,14 @@ const submit = () => {
           Sign in
         </button>
       </form>
+      <div class="mt-4">
+        <div v-if="store.success" class="text-xs mt-0 text-green-600">
+          {{ store.success }}
+        </div>
+        <div v-if="store.error" class="text-xs mt-0 text-red-600">
+          {{ store.error }}
+        </div>
+      </div>
     </div>
   </div>
 </template>
