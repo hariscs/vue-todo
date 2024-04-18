@@ -2,6 +2,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserAuthStore } from '@/stores/user-auth'
+
 const store = useUserAuthStore()
 
 const email = ref('')

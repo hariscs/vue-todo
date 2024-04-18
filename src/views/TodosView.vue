@@ -1,3 +1,31 @@
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserTodosStore } from '@/stores/user-todos'
+
+const store = useUserTodosStore()
+
+onMounted(() => {
+  store.setTodos()
+})
+
+const search = ref('')
+const router = useRouter()
+
+const filteredTodos = computed(() => {
+  if (!search.value) {
+    return store.getTodos
+  }
+  return store.getTodos.filter((todo) =>
+    todo.title.toLowerCase().includes(search.value.toLowerCase())
+  )
+})
+
+// const deleteTodo = (id: string) => {
+//   todos.value = todos.value.filter((todo) => todo.id !== id)
+// }
+</script>
+
 <template>
   <div class="container mx-auto px-4 my-8">
     <h2 class="text-2xl font-bold mb-4 text-center">Todos</h2>
@@ -15,23 +43,22 @@
         class="mb-4 w-full border px-3 py-2 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
       />
       <div
+        v-if="store.getTodos"
         v-for="todo in filteredTodos"
-        :key="todo.id"
+        :key="todo?.id"
         class="mb-4 p-4 rounded shadow-lg bg-white"
       >
-        <h3 class="text-xl">{{ todo.title }}</h3>
-        <p>{{ todo.description }}</p>
+        <h3 class="text-xl">{{ todo?.title }}</h3>
+        <p>{{ todo?.description }}</p>
         <div class="mt-4">
           <router-link
-            :to="`/todos/${todo.id}`"
+            :to="`/todos/${todo?.id}`"
             class="text-blue-500 hover:underline"
           >
             View/Update
           </router-link>
-          <button
-            @click="deleteTodo(todo.id)"
-            class="ml-4 text-red-500 hover:underline"
-          >
+          <button class="ml-4 text-red-500 hover:underline">
+            <!-- @click="deleteTodo(todo.id)" -->
             Delete
           </button>
         </div>
@@ -39,28 +66,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-
-const todos = ref([
-  { id: '1', title: 'Todo 1', description: 'Description 1' },
-  { id: '2', title: 'Todo 2', description: 'Description 2' },
-])
-const search = ref('')
-const router = useRouter()
-
-const filteredTodos = computed(() => {
-  if (!search.value) {
-    return todos.value
-  }
-  return todos.value.filter((todo) =>
-    todo.title.toLowerCase().includes(search.value.toLowerCase())
-  )
-})
-
-const deleteTodo = (id: string) => {
-  todos.value = todos.value.filter((todo) => todo.id !== id)
-}
-</script>

@@ -1,4 +1,5 @@
 import type { Todo } from '@/types'
+import { getTodos } from '@/utils'
 import { defineStore } from 'pinia'
 
 export const useUserTodosStore = defineStore('user todos', {
@@ -8,8 +9,17 @@ export const useUserTodosStore = defineStore('user todos', {
     success: null as string | null,
   }),
   actions: {
-    setTodos(todos: Todo[]) {
-      this.todos = todos
+    async setTodos() {
+      this.error = null
+      try {
+        const data = await getTodos()
+        this.todos = data.items.data
+        this.error = null
+        this.success = 'success'
+      } catch (error) {
+        this.error = 'Error getting todos'
+        console.log(error)
+      }
     },
     setAddTodo(todo: Todo) {
       this.todos.push(todo)
@@ -26,8 +36,8 @@ export const useUserTodosStore = defineStore('user todos', {
     getTodos(): Todo[] | [] {
       return this.todos || []
     },
-    getTodoById(id: string): Todo | null {
-      return this.todos.find((t) => t.id === id) || null
-    },
+    // getTodoById(id: string): Todo | null {
+    //   return this.todos.find((t) => t.id === id) || null
+    // },
   },
 })
