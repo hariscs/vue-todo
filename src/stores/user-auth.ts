@@ -1,6 +1,5 @@
 import type { User } from '@/types'
 import { defineStore } from 'pinia'
-import axios from 'axios'
 import { login, logout, register } from '@/utils'
 
 export const useUserAuthStore = defineStore('user auth', {
@@ -50,7 +49,6 @@ export const useUserAuthStore = defineStore('user auth', {
   },
   getters: {
     getIsUserLoggedIn(): boolean {
-      //   check if token exists in the local storage
       return !!localStorage.getItem('token')
     },
   },

@@ -1,5 +1,5 @@
 import type { Todo } from '@/types'
-import { getTodos } from '@/utils'
+import { addTodo, getTodos, removeTodoById, updateTodoById } from '@/utils'
 import { defineStore } from 'pinia'
 
 export const useUserTodosStore = defineStore('user todos', {
@@ -21,23 +21,48 @@ export const useUserTodosStore = defineStore('user todos', {
         console.log(error)
       }
     },
-    setAddTodo(todo: Todo) {
-      this.todos.push(todo)
+    async setAddTodo(todo: Todo) {
+      this.error = null
+      try {
+        const data = await addTodo(todo)
+        console.log('set todo', data)
+        this.error = null
+        this.success = 'added todo'
+        this.todos.push(todo)
+      } catch (error) {
+        this.error = 'Error adding todo'
+        console.log(error)
+      }
     },
-    setRemoveTodo(todo: Todo) {
-      this.todos = this.todos.filter((t) => t !== todo)
+    async setRemoveTodo(id: string) {
+      this.error = null
+      try {
+        const data = await removeTodoById(id)
+        this.error = null
+        this.success = 'removed todo'
+        this.todos = this.todos.filter((t) => t.id !== id)
+      } catch (error) {
+        this.error = 'Error removing todo'
+        console.log(error)
+      }
     },
-    setUpdateTodoById(id: string, updatedTodo: Todo) {
-      const index = this.todos.findIndex((t) => t.id === id)
-      this.todos[index] = updatedTodo
+    async setUpdateTodoById(id: string, updatedTodo: Todo) {
+      this.error = null
+      try {
+        const data = await updateTodoById(id, updatedTodo)
+        this.error = null
+        this.success = 'updated todo'
+        const index = this.todos.findIndex((t) => t.id === id)
+        this.todos[index] = updatedTodo
+      } catch (error) {
+        this.error = 'Error updating todo'
+        console.log(error)
+      }
     },
   },
   getters: {
     getTodos(): Todo[] | [] {
       return this.todos || []
     },
-    // getTodoById(id: string): Todo | null {
-    //   return this.todos.find((t) => t.id === id) || null
-    // },
   },
 })

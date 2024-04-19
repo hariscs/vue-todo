@@ -30,6 +30,7 @@ const submit = async () => {
     return
   } else {
     router.push('/todos')
+    console.log('first')
   }
 }
 </script>

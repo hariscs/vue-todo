@@ -1,3 +1,50 @@
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useUserTodosStore } from '@/stores/user-todos'
+import type { Todo } from '@/types'
+import { getTodoById } from '@/utils'
+
+const todo = ref<Todo | null>(null)
+const router = useRouter()
+const route = useRoute()
+const store = useUserTodosStore()
+const id = route.params.id as string
+
+onMounted(async () => {
+  todo.value = await getTodoById(id)
+})
+
+const title = computed({
+  get: () => todo.value?.title || '',
+  set: (value: string) => {
+    if (todo.value) {
+      todo.value.title = value
+    }
+  },
+})
+
+const description = computed({
+  get: () => todo.value?.description || '',
+  set: (value: string) => {
+    if (todo.value) {
+      todo.value.description = value
+    }
+  },
+})
+
+const submit = () => {
+  store.setUpdateTodoById(id, {
+    title: title.value,
+    description: description.value,
+  })
+  if (store.error) {
+    return
+  } else {
+    router.push('/todos')
+  }
+}
+</script>
 <template>
   <div class="container mx-auto px-4">
     <h2 class="text-2xl font-bold mb-4">Update Todo</h2>
@@ -7,8 +54,8 @@
           Title:
         </label>
         <input
-          id="title"
           v-model="title"
+          id="title"
           type="text"
           required
           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -22,8 +69,8 @@
           Description:
         </label>
         <textarea
-          id="description"
           v-model="description"
+          id="description"
           required
           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         ></textarea>
@@ -39,21 +86,3 @@
     </form>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
-const title = ref('')
-const description = ref('')
-const router = useRouter()
-
-const submit = () => {
-  console.log('submit')
-  try {
-    router.push('/todos')
-  } catch (error) {
-    console.log(error)
-  }
-}
-</script>

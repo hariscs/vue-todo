@@ -8,8 +8,8 @@ export type User = {
 }
 
 export type Todo = {
-  id: string
+  id?: string
   title: string
   description: string
-  completed: boolean
+  completed?: boolean
 }

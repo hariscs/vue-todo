@@ -1,3 +1,30 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserTodosStore } from '@/stores/user-todos'
+
+const title = ref('')
+const description = ref('')
+const router = useRouter()
+const store = useUserTodosStore()
+
+const submit = () => {
+  const newTodo = {
+    id: Math.random().toString(36).substr(2, 9),
+    title: title.value,
+    description: description.value,
+  }
+  store.setAddTodo(newTodo)
+  title.value = ''
+  description.value = ''
+  if (store.error) {
+    return
+  } else {
+    router.push('/todos')
+  }
+}
+</script>
+
 <template>
   <div class="container mx-auto px-4">
     <h2 class="text-2xl font-bold mb-4">Create Todo</h2>
@@ -37,34 +64,6 @@
         </button>
       </div>
     </form>
+    <div class="text-red-500" v-if="store.error">{{ store.error }}</div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
-const title = ref('')
-const description = ref('')
-const router = useRouter()
-const todos = ref([
-  { id: 1, title: 'Todo 1', description: 'Description 1' },
-  { id: 2, title: 'Todo 2', description: 'Description 2' },
-])
-
-const submit = () => {
-  // Add the new todo to the todos array
-  todos.value.push({
-    id: todos.value.length + 1,
-    title: title.value,
-    description: description.value,
-  })
-
-  // Reset the form
-  title.value = ''
-  description.value = ''
-
-  // Redirect to the todos list
-  router.push('/todos')
-}
-</script>

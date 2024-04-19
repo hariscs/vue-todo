@@ -21,9 +21,9 @@ const filteredTodos = computed(() => {
   )
 })
 
-// const deleteTodo = (id: string) => {
-//   todos.value = todos.value.filter((todo) => todo.id !== id)
-// }
+const deleteTodo = (id: string) => {
+  store.setRemoveTodo(id)
+}
 </script>
 
 <template>
@@ -35,7 +35,8 @@ const filteredTodos = computed(() => {
     >
       Create new Todo
     </router-link>
-    <div class="flex flex-col mt-8">
+
+    <div v-if="store.getTodos.length" class="flex flex-col mt-8">
       <input
         v-model="search"
         type="text"
@@ -43,7 +44,6 @@ const filteredTodos = computed(() => {
         class="mb-4 w-full border px-3 py-2 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
       />
       <div
-        v-if="store.getTodos"
         v-for="todo in filteredTodos"
         :key="todo?.id"
         class="mb-4 p-4 rounded shadow-lg bg-white"
@@ -57,12 +57,17 @@ const filteredTodos = computed(() => {
           >
             View/Update
           </router-link>
-          <button class="ml-4 text-red-500 hover:underline">
-            <!-- @click="deleteTodo(todo.id)" -->
+          <button
+            @click="deleteTodo(todo.id as string)"
+            class="ml-4 text-red-500 hover:underline"
+          >
             Delete
           </button>
         </div>
       </div>
+    </div>
+    <div v-else class="my-8">
+      <p class="text-center">No Todos found</p>
     </div>
   </div>
 </template>
