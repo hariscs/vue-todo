@@ -2,6 +2,10 @@
 
 Built with Vue3, Typescript, and Tailwind CSS.
 
+## Environment Setup
+
+Update the variables in `.env` according to your local setup. see `.env.example`
+
 ## Project Setup
 
 ```sh
